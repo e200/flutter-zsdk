@@ -1,6 +1,8 @@
 # flutter_zsdk
 
-A wrapper for the Android Zebra SDK
+Flutter Zebra SDK wrapper
+
+Android only. iOS support soon
 
 ## Documentation
 
