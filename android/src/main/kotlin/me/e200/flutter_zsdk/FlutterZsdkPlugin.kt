@@ -1,5 +1,6 @@
 package me.e200.flutter_zsdk
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import androidx.annotation.NonNull
@@ -11,40 +12,31 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.PluginRegistry.Registrar
 
 
 /** FlutterZsdkPlugin */
-public class FlutterZsdkPlugin: FlutterPlugin, MethodCallHandler {
-  private var context: Context? = null
-
+public class FlutterZsdkPlugin(/*private var registrar: Registrar*/): FlutterPlugin, MethodCallHandler {
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    this.context = flutterPluginBinding.applicationContext
-
     val channel = MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "flutter_zsdk")
 
-    channel.setMethodCallHandler(FlutterZsdkPlugin())
+    channel.setMethodCallHandler(FlutterZsdkPlugin(/*this.registrar*/))
+  }
+
+  companion object {
+    @JvmStatic
+    fun registerWith(registrar: Registrar) {
+      val channel = MethodChannel(registrar.messenger(), "flutter_zsdk")
+      channel.setMethodCallHandler(FlutterZsdkPlugin(/*registrar*/))
+    }
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-    if (call.method == "getBluetoothDevices") {
-      BluetoothDiscoverer.findPrinters(this.context, BluetoothDiscoverHandler(result))
-
-      /*
-
-      val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-
-      val bluetoothDevices = bluetoothAdapter.bondedDevices
-
-      val hashMap = mutableListOf<HashMap<String, String>>()
-
-      bluetoothDevices.forEach {
-        hashMap.add(hashMapOf("name" to it.name, "address" to it.address))
-      }
-
-      result.success(hashMap)*/
+    /*if (call.method == "getBluetoothDevices") {
+      BluetoothDiscoverer.findPrinters(this.registrar.context(), BluetoothDiscoverHandler(result))
     } else {
       result.notImplemented()
-    }
+    }*/
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
